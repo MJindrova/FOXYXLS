@@ -56,6 +56,7 @@ DEFINE CLASS FoxyXLS AS CUSTOM
    _nCurrFXRecord      = 20
    cDefaultFontName    = "Arial"
    nDefaultFontSize    = 10
+   cDefaultColor       = "Automatic" && MJ 2019-08-12
    nDefaultColumnWidth = 0
    nDefaultRowHeight   = 0
    cAFXStyles=""                            && Cell styles
@@ -364,7 +365,6 @@ DEFINE CLASS FoxyXLS AS CUSTOM
          ENDIF
          RETURN m.lcFontFull
       ENDIF 
-
       
       * Working with the supposition NOT EMPTY(tcFontFull)
        
@@ -373,7 +373,7 @@ DEFINE CLASS FoxyXLS AS CUSTOM
       LOCAL m.lcFontFull, m.lcColorName, m.lnColor, m.lcFont, m.lnSize, m.lcStyle, m.lcColor, m.lii
       LOCAL ARRAY m.laFontA(1)
 
-      =ALINES(m.laFontA, CHRTRAN(STRTRAN(m.tcFontFull,',,',', ,'), ",", CHR(10)))
+      =ALINES(m.laFontA, CHRTRAN(STRTRAN(m.tcFontFull+',,,,', ',,', ', ,'), ",", CHR(10))) && MJ 2019-08-12
       m.lcFont  = ALLTRIM(m.laFontA(1))
       IF EMPTY(m.lcFont)
          m.lcFont = This.cDefaultFontName
@@ -384,8 +384,13 @@ DEFINE CLASS FoxyXLS AS CUSTOM
       ENDIF 
       m.lcStyle = UPPER(ALLTRIM(m.laFontA(3)))
       m.lcColor = UPPER(ALLTRIM(m.laFontA(4)))
+      * MJ 2019-08-12 B
+      IF EMPTY(m.lcColor)
+         m.lcColor=This.cDefaultColor
+      ENDIF
+      * MJ 2019-08-12 E
 
-      m.tcFontFull = m.lcFont + "," + TRANSFORM(m.lnSize) + "," + IIF(EMPTY(m.lcStyle), " ",m.lcStyle) + "," && Must be space for VFP 6
+      m.tcFontFull = m.lcFont + "," + TRANSFORM(m.lnSize) + "," + IIF(EMPTY(m.lcStyle), " ", m.lcStyle) + "," && Must be space for VFP 6
 
       DO CASE
          CASE EMPTY(m.lcColor) AND m.tnForeColor = 0 && No color passed
